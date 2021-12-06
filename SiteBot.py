@@ -15,22 +15,27 @@ import pybase64
 import warnings
 import logging
 from contextlib import suppress
+
+
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
 logging.basicConfig(
     format='%(asctime)s %(levelname)-8s %(message)s',
     level=logging.INFO,
     datefmt='%Y-%m-%d %H:%M:%S')
 
-
-username = ""
+username = "m"
 password = ""
 
+numcampers = 3
 firstname_of_camper2 = ""
 lastname_of_camper2 = ""
+firstname_of_camper3 = ""
+lastname_of_camper3 = ""
+
 #Month must have a pre and post blank character for now. eg " APR "
-month = ""
+month = " MAY "
 #Date must have a pre and post blank character for now. eg " 29 "
-date = ""
+date = " 2 "
 #List of Lakes eg ["H49", "H48"]
 desiredlakes = ["H49", "H48"]
 tentcolors = "Two White"
@@ -75,7 +80,7 @@ def enterdates():
         driver.find_element_by_id("mat-option-115").click()
         #Num Campers
         driver.find_element_by_id("mat-input-7").send_keys(Keys.BACKSPACE)
-        driver.find_element_by_id("mat-input-7").send_keys('2')
+        driver.find_element_by_id("mat-input-7").send_keys(numcampers)
         #Access point
         driver.find_element_by_id("mat-select-value-5").click()
         driver.find_element_by_id("mat-option-123").click()
@@ -116,14 +121,14 @@ def checksiteavailable(desiredlakes, day):
                 driver.find_element_by_id("mat-autocomplete-2").click()  
                 time.sleep(0.5)  
                 try:
-                    driver.find_element_by_xpath("//*[starts-with(@id, 'mat-error')]")
+                    driver.find_element_by_xpath("//*[contains(@id, 'mat-error')]")
                 except NoSuchElementException:
                     driver.find_element_by_id("addToItineraryButton").click()   
                     logging.info("Day " + day + ", Site " + lake + ": Site booked!")
                     time.sleep(0.5)  
                     break
                 else:
-                    logging.info("Day " + day + ", Site " + lake + ": You cannot book the same site two days in a row, trying next site")
+                    logging.info("Day " + day + ", Site " + lake + ": Site not available, trying next site")
                     failed = failed + 1
 
         
@@ -168,10 +173,20 @@ def reserve():
     #Confirm Occupant
     driver.find_element_by_id("confirmOccupant").click()
     time.sleep(2)
-    #Enter Second Camper Name
-    logging.info("Entering " + firstname_of_camper2 + " " + lastname_of_camper2 + " as second camper...")
-    driver.find_element_by_id("firstName-1").send_keys(firstname_of_camper2)
-    driver.find_element_by_id("lastName-1").send_keys(lastname_of_camper2)
+    if numcampers == 2: 
+        #Enter Second Camper Name
+        logging.info("Entering " + firstname_of_camper2 + " " + lastname_of_camper2 + " as second camper...")
+        driver.find_element_by_id("firstName-1").send_keys(firstname_of_camper2)
+        driver.find_element_by_id("lastName-1").send_keys(lastname_of_camper2)
+    if numcampers == 3:
+        #Enter Second Camper Name 
+        logging.info("Entering " + firstname_of_camper2 + " " + lastname_of_camper2 + " as second camper...")
+        driver.find_element_by_id("firstName-1").send_keys(firstname_of_camper2)
+        driver.find_element_by_id("lastName-1").send_keys(lastname_of_camper2)
+        #Enter Third Camper Name
+        logging.info("Entering " + firstname_of_camper2 + " " + lastname_of_camper2 + " as third camper...")
+        driver.find_element_by_id("firstName-2").send_keys(firstname_of_camper3)
+        driver.find_element_by_id("lastName-2").send_keys(lastname_of_camper3)
     driver.find_element_by_id("mat-input-12").send_keys(tentcolors + " Tents")
     time.sleep(0.2)
     driver.find_element_by_id("partyInfoButton").click()
